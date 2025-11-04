@@ -1,0 +1,41 @@
+name: Deploy Pod to Kubernetes
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Generate random Pod name
+        id: podname
+        run: |
+          echo "id=$(openssl rand -hex 4)" >> $GITHUB_OUTPUT
+
+      - name: Apply Pod manifest
+        run: |
+          POD_NAME=mypod-${{ steps.podname.outputs.id }}
+          NAMESPACE=default  # Change this if you have a custom namespace
+
+          cat <<EOF | kubectl apply -f -
+          apiVersion: v1
+          kind: Pod
+          metadata:
+            name: ${POD_NAME}
+            namespace: ${NAMESPACE}
+            labels:
+              name: mypod
+          spec:
+            containers:
+            - name: mypod
+              image: rancher/hello-world
+          EOF
+
+      - name: Check running pods
+        run: kubectl get pods -n default
