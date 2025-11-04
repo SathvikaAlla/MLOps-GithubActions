@@ -20,4 +20,6 @@ jobs:
             --set image.repository=rancher/hello-world \
             --set image.tag=latest \
             --set service.type=NodePort \
-            --set service.nodePort=30080
+            --set service.nodePort=30080 \
+            --set global.security.allowInsecureImages=true
+
