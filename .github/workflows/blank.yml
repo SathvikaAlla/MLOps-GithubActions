@@ -37,6 +37,6 @@ jobs:
           context: .
           push: true
           tags: |
-            your-dockerhub-username/hello-world-nginx:v1
-            your-dockerhub-username/hello-world-nginx:${{ github.ref_name }}-${{ github.sha }}
+            ${{ secrets.DOCKER_USERNAME }}/hello-world-nginx:v1
+            ${{ secrets.DOCKER_USERNAME }}/hello-world-nginx:${{ github.ref_name }}-${{ github.sha }}
 
