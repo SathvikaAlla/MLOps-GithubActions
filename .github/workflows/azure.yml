@@ -1,0 +1,23 @@
+name: Azure ML
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Azure CLI login
+        run: |
+            az login --service-principal \
+            --username ${{ secrets.AZURE_CLIENT_ID }} \
+            --password ${{ secrets.AZURE_CLIENT_SECRET }} \
+            --tenant ${{ secrets.AZURE_TENANT_ID }}
+
+            az extension add --name ml
+            az configure --defaults group=${{ secrets.GROUP }} workspace=${{ secrets.WORKSPACE }} location=${{ secrets.LOCATION }}
+            az ml compute list
+
