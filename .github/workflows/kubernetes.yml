@@ -17,11 +17,15 @@ jobs:
         id: podname
         run: |
           echo "id=$(openssl rand -hex 4)" >> $GITHUB_OUTPUT
+    
+      - name: Create namespace if not exists
+        run: kubectl create namespace MLOps --dry-run=client -o yaml | kubectl apply -f -
+
 
       - name: Apply Pod manifest
         run: |
           POD_NAME=mypod-${{ steps.podname.outputs.id }}
-          NAMESPACE=default  # Change this if you have a custom namespace
+          NAMESPACE=MLOps  
 
           cat <<EOF | kubectl apply -f -
           apiVersion: v1
@@ -38,4 +42,7 @@ jobs:
           EOF
 
       - name: Check running pods
-        run: kubectl get pods -n default
+        run: kubectl get pods -n MLOps
+
+      - name: Check Pod logs
+        run: kubectl logs mypod-${{ steps.podname.outputs.id }} -n MLOps
