@@ -44,5 +44,3 @@ jobs:
       - name: Check running pods
         run: kubectl get pods -n mlops
 
-      - name: Check Pod logs
-        run: kubectl logs mypod-${{ steps.podname.outputs.id }} -n mlops
