@@ -1,0 +1,23 @@
+name: Add Helm Deployment to Kubernetes
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Deploy with Helm
+        run: |
+            helm repo add bitnami https://charts.bitnami.com/bitnami
+            helm repo update
+            helm upgrade --install hello-release bitnami/nginx \
+            --namespace mlops \
+            --create-namespace \
+            --set image.repository=rancher/hello-world \
+            --set image.tag=latest \
+            --set service.type=NodePort \
+            --set service.nodePort=30080
