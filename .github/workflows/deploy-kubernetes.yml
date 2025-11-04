@@ -16,16 +16,6 @@ jobs:
       - name: Create namespace if not exists
         run: kubectl create namespace mlops --dry-run=client -o yaml | kubectl apply -f -
 
-      - name: Deploy with Helm
-        run: |
-          helm upgrade --install hello-release ./helm-chart \
-            --namespace mlops \
-            --create-namespace \
-            --set image.repository=rancher/hello-world \
-            --set image.tag=latest \
-            --set service.type=NodePort \
-            --set service.nodePort=30080
-
       - name: Apply Deployment
         run: |
           kubectl apply -n mlops -f - <<EOF
