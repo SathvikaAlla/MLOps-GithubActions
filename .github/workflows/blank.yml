@@ -34,6 +34,6 @@ jobs:
           context: .
           push: true
           tags: |
-            ghcr.io/SathvikaAlla/hello-world-nginx:v1
-            ghcr.io/SathvikaAlla/hello-world-nginx:${{ github.ref_name }}-${{ github.sha }}
+            ghcr.io/sathvikaalla/hello-world-nginx:v1
+            ghcr.io/sathvikaalla/hello-world-nginx:${{ github.ref_name }}-${{ github.sha }}
 
