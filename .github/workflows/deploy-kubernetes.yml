@@ -1,0 +1,65 @@
+name: Deploy to Kubernetes
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Create namespace if not exists
+        run: kubectl create namespace mlops --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: Apply Deployment
+        run: |
+          kubectl apply -n mlops -f - <<EOF
+          apiVersion: apps/v1
+          kind: Deployment
+          metadata:
+            name: hello-wrld-deployment
+          spec:
+            replicas: 1
+            selector:
+              matchLabels:
+                app: hello
+            template:
+              metadata:
+                labels:
+                  app: hello
+              spec:
+                containers:
+                - name: hello
+                  image: rancher/hello-world
+                  ports:
+                  - containerPort: 80
+          EOF
+
+      - name: Apply NodePort Service
+        run: |
+          kubectl apply -n mlops -f - <<EOF
+          apiVersion: v1
+          kind: Service
+          metadata:
+            name: hello-service
+          spec:
+            type: NodePort
+            selector:
+              app: hello
+            ports:
+              - protocol: TCP
+                port: 80
+                targetPort: 80
+                nodePort: 30080
+          EOF
+
+      - name: Wait for rollout
+        run: kubectl rollout status deployment/hello-wrld-deployment -n mlops
+
+      - name: Restart Deployment 
+        run: kubectl rollout restart deployment/hello-wrld-deployment -n mlops
